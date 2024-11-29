@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Congratulations, Queen!</title>
+    <style>
+        /* Body Styling */
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(45deg, #ff9a9e, #fad0c4, #fbc2eb, #a18cd1, #fcb69f);
+            background-size: 400% 400%;
+            animation: gradientBG 8s ease infinite;
+        }
+
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* Floating Stars Background */
+        canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            z-index: -1;
+        }
+
+        /* Card Styling */
+        .card {
+            text-align: center;
+            width: 90%;
+            max-width: 700px;
+            margin: auto;
+            padding: 30px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(15px);
+            animation: slideIn 1.5s ease-out;
+        }
+
+        @keyframes slideIn {
+            0% {
+                transform: translateY(100px);
+                opacity: 0;
+            }
+            100% {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        /* Title Styling */
+        h1 {
+            font-size: 2.8rem;
+            font-weight: bold;
+            background: linear-gradient(90deg, #ff9a9e, #fad0c4, #fbc2eb, #a18cd1);
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: rainbowText 5s linear infinite;
+        }
+
+        @keyframes rainbowText {
+            0% { background-position: 0%; }
+            100% { background-position: 100%; }
+        }
+
+        /* Subtitle and Paragraphs */
+        p {
+            font-size: 1.2rem;
+            color: white;
+            line-height: 1.8;
+            margin: 15px 0;
+            animation: fadeIn 2s ease;
+        }
+
+        /* Button Styling */
+        .button {
+            display: inline-block;
+            background: linear-gradient(to right, #ff6f61, #fbc2eb);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            border-radius: 50px;
+            font-size: 1rem;
+            font-weight: bold;
+            text-decoration: none;
+            transition: all 0.3s ease-in-out;
+            box-shadow: 0 10px 20px rgba(255, 105, 135, 0.5);
+            cursor: pointer;
+        }
+
+        .button:hover {
+            transform: scale(1.1);
+            background: linear-gradient(to right, #fbc2eb, #ff9a9e);
+            box-shadow: 0 15px 30px rgba(255, 105, 135, 0.7);
+        }
+
+        .container {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 100%;
+            max-width: 800px;
+        }
+
+        /* Celebration Popup */
+        .popup {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            padding: 40px;
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            font-size: 1.5rem;
+            text-align: center;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            display: none;
+        }
+
+        .popup span {
+            color: #ff9a9e;
+            font-weight: bold;
+            font-size: 2rem;
+        }
+
+        .popup button {
+            margin-top: 20px;
+            padding: 10px 20px;
+            background: #ff6f61;
+            border: none;
+            border-radius: 10px;
+            color: white;
+            font-size: 1rem;
+            cursor: pointer;
+        }
+
+        .popup button:hover {
+            background: #ff9a9e;
+        }
+    </style>
+</head>
+<body>
+    <!-- Canvas for Stars -->
+    <canvas id="stars"></canvas>
+
+    <!-- Content Card -->
+    <div class="container">
+        <div class="card">
+            <h1>🎉 Congratulations, sayang! 🎉</h1>
+            <p>You’ve accomplished something extraordinary and inspired everyone around you!</p>
+            <p>Your achievement in <strong>[Your Achievement]</strong> shines as brightly as the stars above. Keep dazzling the world!</p>
+            <button class="button" id="celebrate-btn">Celebrate with Me 🎊</button>
+        </div>
+    </div>
+
+    <!-- Popup -->
+    <div class="popup" id="popup">
+        <p>✨ <span>SAYANG!</span> TAHNIAH SEBAB DAPAT CAPAI ACHIEVEMENT BARU, SEMOGA TERUS MELANGKAH MAJU KEHADAPAN! ✨</p>
+        <button onclick="closePopup()">Close</button>
+    </div>
+
+    <!-- JavaScript for Stars Animation and Popup -->
+    <script>
+        const canvas = document.getElementById("stars");
+        const ctx = canvas.getContext("2d");
+
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        const stars = [];
+        const starCount = 200;
+
+        class Star {
+            constructor(x, y, radius, color, speed) {
+                this.x = x;
+                this.y = y;
+                this.radius = radius;
+                this.color = color;
+                this.speed = speed;
+            }
+
+            draw() {
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+                ctx.fillStyle = this.color;
+                ctx.fill();
+                ctx.closePath();
+            }
+
+            update() {
+                this.y += this.speed;
+                if (this.y > canvas.height) {
+                    this.y = 0 - this.radius;
+                    this.x = Math.random() * canvas.width;
+                }
+                this.draw();
+            }
+        }
+
+        function initStars() {
+            for (let i = 0; i < starCount; i++) {
+                const x = Math.random() * canvas.width;
+                const y = Math.random() * canvas.height;
+                const radius = Math.random() * 2 + 1;
+                const color = `rgba(255, 255, 255, ${Math.random()})`;
+                const speed = Math.random() * 1 + 0.5;
+
+                stars.push(new Star(x, y, radius, color, speed));
+            }
+        }
+
+        function animateStars() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            stars.forEach((star) => star.update());
+            requestAnimationFrame(animateStars);
+        }
+
+        initStars();
+        animateStars();
+
+        // Adjust canvas size on window resize
+        window.addEventListener("resize", () => {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            stars.length = 0;
+            initStars();
+        });
+
+        // Popup functionality
+        const popup = document.getElementById("popup");
+        const celebrateBtn = document.getElementById("celebrate-btn");
+
+        celebrateBtn.addEventListener("click", () => {
+            popup.style.display = "block";
+        });
+
+        function closePopup() {
+            popup.style.display = "none";
+        }
+    </script>
+</body>
+</html>
